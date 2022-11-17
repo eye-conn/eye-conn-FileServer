@@ -1,4 +1,2 @@
 flask
-pycryptodome
-numpy
-opencv-python
+python-telegram-bot
