@@ -16,8 +16,8 @@ from telegram.ext import (
 #   ParseMode
 # )
 
-EYECONN_SERVER='http://localhost:8000'
-# EYECONN_SERVER='https://eyeconn.herokuapp.com'
+#EYECONN_SERVER='http://localhost:8000'
+EYECONN_SERVER='https://eyeconn.herokuapp.com'
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
