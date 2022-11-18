@@ -9,19 +9,19 @@ import random
 app = Flask(__name__)
 
 # Creating the upload folder
-upload_folder = "files/uploads/"
+upload_folder = os.path.join(os.getcwd(), 'files','uploads',)
 if not os.path.exists(upload_folder):
    os.mkdir(upload_folder)
 
 # Creating the download folder
-download_folder = "files/encrypted/"
+download_folder = os.path.join(os.getcwd(), 'files','downloads')
 if not os.path.exists(download_folder):
    os.mkdir(download_folder)
 
 
 def encrypt(file):
     try:
-        fo = open(os.getcwd()+ "\\files\\uploads\\" +file, "rb")
+        fo = open(os.path.join(upload_folder,file), "rb")
         image=fo.read()
         fo.close()
         image=bytearray(image)
@@ -29,12 +29,12 @@ def encrypt(file):
         # key = bytearray(key)
         for index , value in enumerate(image):
             image[index] = value^key
-        fo=open(os.getcwd()+ "\\files\\encrypted\\" +file,"wb")
+        fo=open(os.path.join(download_folder,file[:-4]+'.eye'),"wb")
         imageRes="enc.jpg"
         fo.write(image)
         fo.close()
-        if os.path.exists(os.getcwd()+ "\\files\\uploads\\" +file):
-            os.remove(os.getcwd()+ "\\files\\uploads\\" +file)
+        if os.path.exists(os.path.join(upload_folder,file)):
+            os.remove(os.path.join(upload_folder,file))
         return None,key
         # fin = open('hi.jpg', 'wb')
      
@@ -45,18 +45,24 @@ def encrypt(file):
         print(e)
         return "Error",None
 
-def decrypt(key,file):
-    fo = open(os.getcwd()+ "\\files\\encrypted\\" +file, "rb")
-    image=fo.read()
-    fo.close()
-    image=bytearray(image)
-    for index , value in enumerate(image):
-	    image[index] = value^key
-    fo=open(os.getcwd()+ "\\files\\uploads\\" +file,"wb")
-    imageRes="dec.jpg"
-    fo.write(image)
-    fo.close()
-    return imageRes
+def decrypt(file,key):
+    try:
+        fo = open(os.path.join(upload_folder,file), "rb")
+        image=fo.read()
+        fo.close()
+        image=bytearray(image)
+        for index , value in enumerate(image):
+            image[index] = value^key
+        fo=open(os.path.join(download_folder,file),"wb")
+        imageRes="dec.jpg"
+        fo.write(image)
+        fo.close()
+        if os.path.exists(os.path.join(upload_folder,file)):
+            os.remove(os.path.join(upload_folder,file))
+        return 
+    except Exception as e:
+        print(e)
+        return 
 
 # configuring the allowed extensions
 allowed_extensions = ['jpg', 'png', 'jpeg']
@@ -91,7 +97,7 @@ def decryptFile():
         #   print(files.content_length,flush=True)
             print(file,key)
             # print(loads(request.data),flush=True)
-            encrypt(file, key)
+            decrypt(file, int(key))
             return dumps({"success": True})
       except Exception as e:
             print(e)
@@ -106,7 +112,7 @@ def decryptFile():
 def download():
     try:
         # send file from encrypted directory
-        return send_file(os.getcwd() + "\\files\\encrypted\\" + request.args.get('file'), as_attachment=True)
+        return send_file(os.path.join(download_folder,request.args.get('file')), as_attachment=True)
     except Exception as e:
         print(e)
         return dumps({"error": "File not found"})
@@ -118,7 +124,7 @@ def uploadfile():
       files = request.files.get('image') # get the file from the files object
     #   print(files.content_length,flush=True)
       try:
-            files.save(os.getcwd() + "/files/uploads/" + files.filename)
+            files.save(os.path.join(upload_folder,files.filename))
             return dumps({"success": True})
       except FileNotFoundError:
             return  dumps({"error": "Folder not found"})
