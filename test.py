@@ -32,7 +32,7 @@ def encrypt():
         # writing encrypted data in image
         fin.write(image)
         fin.close()
-        print('Encryption Done...')
+        print('Successfully encrypted...')
     
         
     except Exception:
