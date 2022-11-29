@@ -15,7 +15,7 @@ if not os.path.exists(upload_folder):
 
 # Creating the download folder
 download_folder = os.path.join(os.getcwd(), 'files','downloads')
-if not os.path.exists(download_folder):
+if not os.path.exists(download_folder): 
    os.mkdir(download_folder)
 
 
